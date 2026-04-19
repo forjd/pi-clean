@@ -134,6 +134,39 @@ With `--uninstall-cli`, the script scans global package roots and looks for a pa
 
 That avoids hardcoding a single package name.
 
+## Conventional commits
+
+This repo enforces Conventional Commits in pull requests:
+
+- commit messages are linted with `commitlint`
+- pull request titles must also be semantic
+
+Examples:
+
+- `feat: add npmCommand-aware uninstall detection`
+- `fix: preserve .agents paths during cleanup`
+- `docs: clarify what local package sources are skipped`
+- `chore: update CI workflow`
+
+If you use squash merges, make sure the PR title is also a valid conventional commit, since that title often becomes the final commit message on `main`.
+
+## Releases
+
+This repo uses Release Please.
+
+On pushes to `main`, Release Please will:
+
+- inspect conventional commits
+- open or update a release PR
+- generate changelog entries
+- create a GitHub release after the release PR is merged
+
+In practice:
+
+- `feat:` usually triggers a minor release
+- `fix:` usually triggers a patch release
+- `feat!:` or a `BREAKING CHANGE:` footer triggers a major release
+
 ## Development
 
 ### Lint
@@ -161,6 +194,8 @@ GitHub Actions runs:
 - `bash -n`
 - `shellcheck`
 - integration tests with Bats
+- conventional commit checks for pull requests
+- Release Please on `main`
 
 on both:
 
