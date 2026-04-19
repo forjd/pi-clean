@@ -57,6 +57,8 @@ The scripts are tested against macOS' default Bash 3.2 and modern Linux Bash.
 
 ## Install
 
+### One-line install
+
 Install the latest release to `~/.local/bin/pi-clean`:
 
 ```bash
@@ -81,10 +83,36 @@ Install a specific version:
 curl -fsSL https://raw.githubusercontent.com/forjd/pi-clean/main/install.sh | bash -s -- --version v1.0.0
 ```
 
-After installing, start with:
+### Homebrew
+
+```bash
+brew install forjd/tap/pi-clean
+```
+
+### After installing
 
 ```bash
 pi-clean --dry-run
+```
+
+## Uninstall the command
+
+If you installed with the one-line installer:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/forjd/pi-clean/main/uninstall.sh | bash
+```
+
+Or with `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/forjd/pi-clean/main/uninstall.sh | bash
+```
+
+If you installed with Homebrew:
+
+```bash
+brew uninstall pi-clean
 ```
 
 ## Usage
@@ -198,6 +226,13 @@ On pushes to `main`, Release Please will:
 - open or update a release PR
 - generate changelog entries
 - create a GitHub release after the release PR is merged
+
+A separate workflow then uploads these release assets:
+
+- `pi-clean.sh`
+- `install.sh`
+- `uninstall.sh`
+- `SHA256SUMS`
 
 In practice:
 

@@ -144,3 +144,22 @@ EOF
   [ "$status" -eq 0 ]
   [ "$output" = "fixture ok" ]
 }
+
+@test "uninstaller removes installed command" {
+  local uninstall_script="$REPO_ROOT/uninstall.sh"
+  local install_dir="$HOME_DIR/.local/bin"
+  local installed="$install_dir/pi-clean"
+
+  mkdir -p "$install_dir"
+  cat > "$installed" <<'EOF'
+#!/usr/bin/env bash
+printf 'installed\n'
+EOF
+  chmod +x "$installed"
+
+  run "$uninstall_script" --dir "$install_dir"
+
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Removed $installed"* ]]
+  assert_missing "$installed"
+}
