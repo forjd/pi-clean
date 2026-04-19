@@ -1,5 +1,11 @@
 # pi-clean
 
+[![CI](https://github.com/forjd/pi-clean/actions/workflows/ci.yml/badge.svg)](https://github.com/forjd/pi-clean/actions/workflows/ci.yml)
+[![Release Please](https://github.com/forjd/pi-clean/actions/workflows/release-please.yml/badge.svg)](https://github.com/forjd/pi-clean/actions/workflows/release-please.yml)
+[![Latest Release](https://img.shields.io/github/v/release/forjd/pi-clean)](https://github.com/forjd/pi-clean/releases)
+[![License: MIT](https://img.shields.io/github/license/forjd/pi-clean)](LICENSE)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-fe5196.svg)](https://www.conventionalcommits.org/en/v1.0.0/)
+
 A cautious cleanup script for removing pi data, project-local `.pi` directories, and pi-managed global npm packages.
 
 > [!WARNING]
