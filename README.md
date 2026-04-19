@@ -53,7 +53,39 @@ If you exported provider API keys in shell startup files, remove those manually.
 - Optional, for uninstalling global packages:
   - `npm`, `pnpm`, or `yarn`
 
-The script is tested against macOS' default Bash 3.2 and modern Linux Bash.
+The scripts are tested against macOS' default Bash 3.2 and modern Linux Bash.
+
+## Install
+
+Install the latest release to `~/.local/bin/pi-clean`:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/forjd/pi-clean/main/install.sh | bash
+```
+
+With `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/forjd/pi-clean/main/install.sh | bash
+```
+
+Install from `main` instead of the latest release:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/forjd/pi-clean/main/install.sh | bash -s -- --main
+```
+
+Install a specific version:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/forjd/pi-clean/main/install.sh | bash -s -- --version v1.0.0
+```
+
+After installing, start with:
+
+```bash
+pi-clean --dry-run
+```
 
 ## Usage
 

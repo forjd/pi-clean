@@ -122,3 +122,25 @@ EOF
   grep -F "custom-npm root -g" "$log_file"
   grep -F "custom-npm uninstall -g pi-skills" "$log_file"
 }
+
+@test "installer downloads script into local bin directory" {
+  local fixture="$TEST_ROOT/fixture-pi-clean.sh"
+  local install_dir="$HOME_DIR/.local/bin"
+  local installed="$install_dir/pi-clean"
+
+  cat > "$fixture" <<'EOF'
+#!/usr/bin/env bash
+printf 'fixture ok\n'
+EOF
+  chmod +x "$fixture"
+
+  run env PI_CLEAN_INSTALL_SCRIPT_URL="file://$fixture" "$INSTALLER" --dir "$install_dir"
+
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Installed pi-clean to $installed"* ]]
+  assert_exists "$installed"
+
+  run "$installed"
+  [ "$status" -eq 0 ]
+  [ "$output" = "fixture ok" ]
+}

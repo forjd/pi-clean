@@ -3,6 +3,7 @@ TEST_ORIGINAL_PATH="$PATH"
 setup_test_env() {
   REPO_ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"
   SCRIPT="$REPO_ROOT/pi-clean.sh"
+  INSTALLER="$REPO_ROOT/install.sh"
   TEST_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/pi-clean-test.XXXXXX")"
   HOME_DIR="$TEST_ROOT/home"
   PROJECTS_ROOT="$HOME_DIR/Projects"
@@ -10,7 +11,7 @@ setup_test_env() {
 
   mkdir -p "$HOME_DIR" "$PROJECTS_ROOT" "$BIN_DIR"
 
-  export REPO_ROOT SCRIPT TEST_ROOT HOME_DIR PROJECTS_ROOT BIN_DIR
+  export REPO_ROOT SCRIPT INSTALLER TEST_ROOT HOME_DIR PROJECTS_ROOT BIN_DIR
   export HOME="$HOME_DIR"
   export PATH="$BIN_DIR:$TEST_ORIGINAL_PATH"
 }
