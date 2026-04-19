@@ -89,6 +89,8 @@ curl -fsSL https://raw.githubusercontent.com/forjd/pi-clean/main/install.sh | ba
 brew install forjd/tap/pi-clean
 ```
 
+The Homebrew tap is updated automatically when a new GitHub release is published.
+
 ### After installing
 
 ```bash
@@ -227,12 +229,14 @@ On pushes to `main`, Release Please will:
 - generate changelog entries
 - create a GitHub release after the release PR is merged
 
-A separate workflow then uploads these release assets:
+Separate workflows then:
 
-- `pi-clean.sh`
-- `install.sh`
-- `uninstall.sh`
-- `SHA256SUMS`
+- upload these release assets:
+  - `pi-clean.sh`
+  - `install.sh`
+  - `uninstall.sh`
+  - `SHA256SUMS`
+- update the Homebrew formula in `forjd/homebrew-tap`
 
 In practice:
 

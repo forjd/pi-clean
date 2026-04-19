@@ -1,0 +1,98 @@
+name: Update Homebrew Tap
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to publish to the tap (for example: v1.0.0)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  update-tap:
+    runs-on: ubuntu-latest
+
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+      TAP_REPO: forjd/homebrew-tap
+      TAP_PATH: tap
+      FORMULA_FILE: tap/Formula/pi-clean.rb
+
+    steps:
+      - name: Verify tap token is configured
+        env:
+          HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
+        run: |
+          if [ -z "$HOMEBREW_TAP_GITHUB_TOKEN" ]; then
+            echo "HOMEBREW_TAP_GITHUB_TOKEN secret is not configured." >&2
+            exit 1
+          fi
+
+      - name: Checkout tap repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.TAP_REPO }}
+          token: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
+          path: ${{ env.TAP_PATH }}
+
+      - name: Compute source tarball SHA256
+        env:
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          VERSION="${TAG#v}"
+          URL="https://github.com/${REPO}/archive/refs/tags/${TAG}.tar.gz"
+          curl -fsSL "$URL" -o release.tar.gz
+          SHA256="$(sha256sum release.tar.gz | awk '{print $1}')"
+          {
+            echo "VERSION=$VERSION"
+            echo "URL=$URL"
+            echo "SHA256=$SHA256"
+          } >> "$GITHUB_ENV"
+
+      - name: Render formula
+        run: |
+          cat > "$FORMULA_FILE" <<EOF
+class PiClean < Formula
+  desc "Cautious cleanup script for removing pi data and project-local .pi directories"
+  homepage "https://github.com/forjd/pi-clean"
+  url "${URL}"
+  sha256 "${SHA256}"
+  license "MIT"
+  version "${VERSION}"
+
+  def install
+    bin.install "pi-clean.sh" => "pi-clean"
+  end
+
+  def caveats
+    <<~EOS
+      Always preview the cleanup plan first:
+        pi-clean --dry-run
+    EOS
+  end
+
+  test do
+    assert_match "Usage: pi-clean", shell_output("#{bin}/pi-clean --help")
+  end
+end
+EOF
+
+      - name: Commit and push formula update
+        working-directory: ${{ env.TAP_PATH }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- Formula/pi-clean.rb; then
+            echo "No Homebrew formula changes needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Formula/pi-clean.rb
+          git commit -m "Update pi-clean to ${TAG}"
+          git push
