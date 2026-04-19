@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Tag to publish to the tap (for example: v1.0.0)
+        description: "Tag to publish to the tap (for example: v1.0.0)"
         required: true
         type: string
 
@@ -64,31 +64,38 @@ jobs:
 
       - name: Render formula
         run: |
-          cat > "$FORMULA_FILE" <<EOF
-class PiClean < Formula
-  desc "Cautious cleanup script for removing pi data and project-local .pi directories"
-  homepage "https://github.com/forjd/pi-clean"
-  url "${URL}"
-  sha256 "${SHA256}"
-  license "MIT"
-  version "${VERSION}"
+          python3 - <<'PY'
+          from pathlib import Path
+          from textwrap import dedent
+          import os
 
-  def install
-    bin.install "pi-clean.sh" => "pi-clean"
-  end
+          content = dedent(f'''\
+          class PiClean < Formula
+            desc "Cautious cleanup script for removing pi data and project-local .pi directories"
+            homepage "https://github.com/forjd/pi-clean"
+            url "{os.environ["URL"]}"
+            sha256 "{os.environ["SHA256"]}"
+            license "MIT"
+            version "{os.environ["VERSION"]}"
 
-  def caveats
-    <<~EOS
-      Always preview the cleanup plan first:
-        pi-clean --dry-run
-    EOS
-  end
+            def install
+              bin.install "pi-clean.sh" => "pi-clean"
+            end
 
-  test do
-    assert_match "Usage: pi-clean", shell_output("#{bin}/pi-clean --help")
-  end
-end
-EOF
+            def caveats
+              <<~EOS
+                Always preview the cleanup plan first:
+                  pi-clean --dry-run
+              EOS
+            end
+
+            test do
+              assert_match "Usage: pi-clean", shell_output("#{{bin}}/pi-clean --help")
+            end
+          end
+          ''')
+          Path(os.environ["FORMULA_FILE"]).write_text(content)
+          PY
 
       - name: Commit and push formula update
         working-directory: ${{ env.TAP_PATH }}
