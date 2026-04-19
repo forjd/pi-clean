@@ -23,13 +23,14 @@ jobs:
       FORMULA_FILE: tap/Formula/pi-clean.rb
 
     steps:
-      - name: Resolve tag
-        run: |
-          if [ "${{ github.event_name }}" = "release" ]; then
-            echo "TAG=${{ github.event.release.tag_name }}" >> "$GITHUB_ENV"
-          else
-            echo "TAG=${{ inputs.tag }}" >> "$GITHUB_ENV"
-          fi
+      - name: Resolve tag from release event
+        if: github.event_name == 'release'
+        run: echo "TAG=${{ github.event.release.tag_name }}" >> "$GITHUB_ENV"
+
+      - name: Resolve tag from manual input
+        if: github.event_name == 'workflow_dispatch'
+        run: echo "TAG=${{ inputs.tag }}" >> "$GITHUB_ENV"
+
       - name: Verify tap token is configured
         env:
           HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
